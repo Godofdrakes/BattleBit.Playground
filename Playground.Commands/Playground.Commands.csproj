@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BBRAPIModules" Version="0.4.7" />
+        <PackageReference Include="BBRAPIModules" Version="0.4.7" Private="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Playground.Common\Playground.Common.csproj" Private="false" />
     </ItemGroup>
 
 </Project>

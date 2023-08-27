@@ -5,8 +5,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BattleBitAPI.Common;
+using BBRAPIModules;
 
-namespace BBRAPIModules.Commands;
+namespace Commands;
 
 public class CommandConfiguration : ModuleConfiguration
 {

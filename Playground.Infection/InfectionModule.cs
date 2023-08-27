@@ -5,18 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using BattleBitAPI.Common;
 using BBRAPIModules;
-using BBRAPIModules.Commands;
-using JetBrains.Annotations;
+using Commands;
+using Playground.Common;
 
 namespace Playground.Infection;
-
-public static class EnumerableEx
-{
-	public static IEnumerable<T> Excluding<T>(this IEnumerable<T> enumerable, T value)
-	{
-		return enumerable.TakeWhile(item => item!.Equals(value));
-	}
-}
 
 public class InfectionModuleConfig : ModuleConfiguration
 {
@@ -34,23 +26,26 @@ public class InfectionModuleConfig : ModuleConfiguration
 	public int CuredRespawn { get; set; } = 30;
 }
 
-[UsedImplicitly]
 [RequireModule(typeof(CommandHandler))]
 public class InfectionModule : BattleBitModule
 {
 	private const Team TEAM_CURED = Team.TeamA;
 	private const Team TEAM_INFECTED = Team.TeamB;
 
-	[UsedImplicitly]
+	private const string PERMISSION_COMMANDS = "Module.Infection.CanRunCommands";
+
 	public InfectionModuleConfig Config { get; set; } = new();
 
-	[UsedImplicitly]
 	public CommandHandler? CommandHandler { get; set; }
+
+	[ModuleReference]
+	public IPermissionsModule? PermissionsModule { get; set; }
 
 	public IEnumerable<RunnerPlayer> CuredPlayers => Server.AllTeamAPlayers;
 	public IEnumerable<RunnerPlayer> InfectedPlayers => Server.AllTeamBPlayers;
 
 	public int InfectedPlayerCount => InfectedPlayers.Count();
+
 	public int InfectedPlayerCountTarget => Convert
 		.ToInt32(Server.CurrentPlayerCount * (float) Config.InfectionPct / 100);
 
@@ -141,7 +136,7 @@ public class InfectionModule : BattleBitModule
 				HeavyGadgetName = Gadgets.SuicideC4.Name,
 				ThrowableName = string.Empty,
 			};
-			
+
 			request.SpawnProtection = 0;
 		}
 
@@ -231,7 +226,6 @@ public class InfectionModule : BattleBitModule
 		_playerLives[player.SteamID] = Math.Max(1, Config.CuredLives);
 	}
 
-	[CommandCallback("infectPlayers")]
 	private void InfectRandomPlayers(int count, bool bAnnounce = true)
 	{
 		_logger.WriteLine($"infecting {count} players");
@@ -267,13 +261,31 @@ public class InfectionModule : BattleBitModule
 	}
 
 	[CommandCallback("curePlayer")]
-	public void CurePlayerCommand(RunnerPlayer player) { CurePlayer(player, true); }
+	public void CurePlayerCommand(RunnerPlayer player)
+	{
+		if (PermissionsModule.HasPermission(player, PERMISSION_COMMANDS))
+		{
+			CurePlayer(player, true);
+		}
+	}
 
 	[CommandCallback("infectPlayer")]
-	private void InfectPlayerCommand(RunnerPlayer player) { InfectPlayer(player, true); }
+	private void InfectPlayerCommand(RunnerPlayer player)
+	{
+		if (PermissionsModule.HasPermission(player, PERMISSION_COMMANDS))
+		{
+			InfectPlayer(player, true);
+		}
+	}
 
 	[CommandCallback("infectPlayers")]
-	private void InfectPlayersCommand(int count) { InfectRandomPlayers(count, true); }
+	private void InfectPlayersCommand(RunnerPlayer player, int count)
+	{
+		if (PermissionsModule.HasPermission(player, PERMISSION_COMMANDS))
+		{
+			InfectRandomPlayers(count, true);
+		}
+	}
 
 	private static void Swap<T>(IList<T> items, int first, int second)
 	{

@@ -7,14 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BBRAPIModules" Version="0.4.7" />
-      <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
+        <PackageReference Include="BBRAPIModules" Version="0.4.7" Private="false" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Commands\Commands.csproj">
-          <PrivateAssets>All</PrivateAssets>
-      </ProjectReference>
+        <ProjectReference Include="..\Commands\Commands.csproj" Private="false" />
+        <ProjectReference Include="..\Playground.Common\Playground.Common.csproj" Private="false" />
     </ItemGroup>
 
 </Project>
