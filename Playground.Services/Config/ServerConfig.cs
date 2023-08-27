@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Playground.Console;
+namespace Playground.Services;
 
 public class ServerConfig
 {
