@@ -9,6 +9,14 @@ using JetBrains.Annotations;
 
 namespace Playground.Infection;
 
+public static class EnumerableEx
+{
+	public static IEnumerable<T> Excluding<T>(this IEnumerable<T> enumerable, T value)
+	{
+		return enumerable.TakeWhile(item => item!.Equals(value));
+	}
+}
+
 public class InfectionModuleConfig : ModuleConfiguration
 {
 	public int InfectionPct { get; set; } = 5;
@@ -137,6 +145,13 @@ public class InfectionModule : BattleBitModule
 	public override Task OnPlayerDied(RunnerPlayer player)
 	{
 		_playerDied?.Invoke(player);
+
+		if (!CuredPlayers.Excluding(player).Any())
+		{
+			Server.AnnounceLong("the infected devour the last survivor");
+			Server.ForceEndGame();
+		}
+		
 		return Task.CompletedTask;
 	}
 
