@@ -1,6 +1,6 @@
 # Privileges
 
-A WIP module to add per-player permissions to a server.
+A WIP module to add per-player permissions to a server
 
 ## Installation
 
@@ -80,3 +80,7 @@ An example config for this module would look like this.
   ]
 }
 ```
+
+## Commands
+
+WIP. None currently. Adding/Removing roles must be done in config. Requires restart.
