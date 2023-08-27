@@ -1,3 +1,7 @@
+# Infection
+
+A pretty simple implementation of an Infection game mode. Basically [the official example](https://github.com/MrOkiDoki/BattleBit-Community-Server-API/wiki/Example:-Infected) but implemented as an [BattleBitAPIRunner](https://github.com/BattleBit-Community-Servers/BattleBitAPIRunner/) module.
+
 ## Config
 
 | Name                          | Type  | Default | Description                                                                                     |
