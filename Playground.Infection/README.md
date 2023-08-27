@@ -38,10 +38,10 @@ You can also just paste the compiled DLL for `BattleBit.Playground/Playground.Co
 
 ## Commands
 
-| Command       | Args        | Description                             |
-|---------------|-------------|-----------------------------------------|
-| curePlayer    | N/A         | Cure the player that runs the command   |
-| infectPlayer  | N/A         | Infect the player that runs the command |
-| infectPlayers | (int) count | Select N random players to infect       |
+| Command       | Args        | Required Permission           | Description                             |
+|---------------|-------------|-------------------------------|-----------------------------------------|
+| curePlayer    | N/A         | Module.Infection.CureSelf     | Cure the player that runs the command   |
+| infectPlayer  | N/A         | Module.Infection.InfectSelf   | Infect the player that runs the command |
+| infectPlayers | (int) count | Module.Infection.InfectOthers | Select N random players to infect       |
 
-Commands currently have no permission requirements and can be run by anyone
+If `PermissionsModule` is not loaded permission requirements will be ignored. All players will have access to all commands.
