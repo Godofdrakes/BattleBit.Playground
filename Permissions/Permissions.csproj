@@ -4,10 +4,11 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>BBRAPIModules.Permissions</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Playground.Infection\Playground.Infection.csproj" />
+      <PackageReference Include="BBRAPIModules" Version="0.4.7" />
     </ItemGroup>
 
 </Project>
