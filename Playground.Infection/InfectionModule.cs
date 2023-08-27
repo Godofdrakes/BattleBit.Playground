@@ -32,7 +32,9 @@ public class InfectionModule : BattleBitModule
 	private const Team TEAM_CURED = Team.TeamA;
 	private const Team TEAM_INFECTED = Team.TeamB;
 
-	private const string PERMISSION_COMMANDS = "Module.Infection.CanRunCommands";
+	private const string PERMISSION_INFECT_OTHERS = "Module.Infection.InfectOthers";
+	private const string PERMISSION_INFECT_SELF = "Module.Infection.InfectSelf";
+	private const string PERMISSION_CURE_SELF = "Module.Infection.CureSelf";
 
 	public InfectionModuleConfig Config { get; set; } = new();
 
@@ -265,7 +267,7 @@ public class InfectionModule : BattleBitModule
 	[CommandCallback("curePlayer")]
 	public void CurePlayerCommand(RunnerPlayer player)
 	{
-		if (PermissionsModule.HasPermission(player, PERMISSION_COMMANDS))
+		if (PermissionsModule.HasPermission(player, PERMISSION_CURE_SELF))
 		{
 			CurePlayer(player, true);
 		}
@@ -274,7 +276,7 @@ public class InfectionModule : BattleBitModule
 	[CommandCallback("infectPlayer")]
 	private void InfectPlayerCommand(RunnerPlayer player)
 	{
-		if (PermissionsModule.HasPermission(player, PERMISSION_COMMANDS))
+		if (PermissionsModule.HasPermission(player, PERMISSION_INFECT_SELF))
 		{
 			InfectPlayer(player, true);
 		}
@@ -283,7 +285,7 @@ public class InfectionModule : BattleBitModule
 	[CommandCallback("infectPlayers")]
 	private void InfectPlayersCommand(RunnerPlayer player, int count)
 	{
-		if (PermissionsModule.HasPermission(player, PERMISSION_COMMANDS))
+		if (PermissionsModule.HasPermission(player, PERMISSION_INFECT_OTHERS))
 		{
 			InfectRandomPlayers(count, true);
 		}
