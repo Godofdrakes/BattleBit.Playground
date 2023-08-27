@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BattleBitAPI.Common;
@@ -29,6 +30,7 @@ public class InfectionModuleConfig : ModuleConfiguration
 	public float InfectGiveDamageMultiplier { get; set; } = 4;
 
 	public int CuredLives { get; set; } = 1;
+	public int CuredCheck { get; set; } = 1;
 	public int CuredRespawn { get; set; } = 30;
 }
 
@@ -53,14 +55,20 @@ public class InfectionModule : BattleBitModule
 		.ToInt32(Server.CurrentPlayerCount * (float) Config.InfectionPct / 100);
 
 	private DateTime _infectionCheckLast = DateTime.MaxValue;
+	private DateTime _curedCheckLast = DateTime.MaxValue;
+
 	private Action<RunnerPlayer>? _playerConnected;
 	private Action<RunnerPlayer>? _playerDied;
 	private Func<RunnerPlayer, Team, bool>? _playerRequestingToChangeTeam;
 
 	private readonly Dictionary<ulong, int> _playerLives = new();
 
+	private readonly TextWriter _logger;
+
 	public InfectionModule()
 	{
+		_logger = Console.Out;
+
 		SetGameState(GameState.WaitingForPlayers);
 	}
 
@@ -72,19 +80,37 @@ public class InfectionModule : BattleBitModule
 	public override Task OnTick()
 	{
 		// todo: don't add code to tick. use a task scheduler and pump it here.
+		var now = DateTime.Now;
 
 		var infectionCheck = Math.Max(1, Config.InfectionCheck);
-		var elapsed = DateTime.Now - _infectionCheckLast;
-		if (elapsed >= TimeSpan.FromSeconds(infectionCheck))
+		var infectionCheckElapsed = DateTime.Now - _infectionCheckLast;
+		if (infectionCheckElapsed >= TimeSpan.FromSeconds(infectionCheck))
 		{
 			var infectedCount = InfectedPlayerCount;
 			var infectedTarget = InfectedPlayerCountTarget;
+
+			_logger.WriteLine($"infected players: {infectedCount}, target: {infectedTarget}");
 
 			// ensure enough players are infected
 			if (infectedCount < infectedTarget)
 			{
 				InfectRandomPlayers(infectedTarget - infectedCount);
 			}
+
+			_infectionCheckLast = now;
+		}
+
+		var curedCheck = Math.Max(1, Config.CuredCheck);
+		var curedCheckElapsed = DateTime.Now - _curedCheckLast;
+		if (curedCheckElapsed >= TimeSpan.FromSeconds(curedCheck))
+		{
+			if (!CuredPlayers.Any())
+			{
+				Server.AnnounceLong("the infected devour the last survivor");
+				Server.ForceEndGame();
+			}
+
+			_curedCheckLast = now;
 		}
 
 		return Task.CompletedTask;
@@ -145,18 +171,13 @@ public class InfectionModule : BattleBitModule
 	public override Task OnPlayerDied(RunnerPlayer player)
 	{
 		_playerDied?.Invoke(player);
-
-		if (!CuredPlayers.Excluding(player).Any())
-		{
-			Server.AnnounceLong("the infected devour the last survivor");
-			Server.ForceEndGame();
-		}
-		
 		return Task.CompletedTask;
 	}
 
 	private void SetGameState(GameState gameState)
 	{
+		_logger.WriteLine($"entering gameState: {gameState}");
+
 		if (gameState >= GameState.Playing)
 		{
 			// start the timer
@@ -200,6 +221,8 @@ public class InfectionModule : BattleBitModule
 
 	private void CurePlayer(RunnerPlayer player, bool bAnnounce = false)
 	{
+		_logger.WriteLine($"curing {player.Name}");
+
 		player.ChangeTeam(TEAM_CURED);
 
 		if (bAnnounce)
@@ -211,6 +234,8 @@ public class InfectionModule : BattleBitModule
 	[CommandCallback("infectPlayers")]
 	private void InfectRandomPlayers(int count, bool bAnnounce = true)
 	{
+		_logger.WriteLine($"infecting {count} players");
+
 		var players = CuredPlayers.ToArray();
 
 		// randomize the player list
@@ -231,6 +256,8 @@ public class InfectionModule : BattleBitModule
 
 	private void InfectPlayer(RunnerPlayer player, bool bAnnounce = true)
 	{
+		_logger.WriteLine($"infecting {player.Name}");
+
 		player.ChangeTeam(TEAM_INFECTED);
 
 		if (bAnnounce)
