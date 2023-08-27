@@ -70,6 +70,8 @@ public class InfectionModule : BattleBitModule
 	public override void OnModulesLoaded()
 	{
 		CommandHandler?.Register(this);
+
+		Console.WriteLine($"PermissionsModule: {PermissionsModule?.GetType().Name ?? "null"}");
 	}
 
 	public override Task OnTick()
