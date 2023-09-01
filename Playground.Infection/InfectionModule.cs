@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using BattleBitAPI.Common;
 using BBRAPIModules;
 using Commands;
-using Playground.Common;
 
 namespace Playground.Infection;
 
@@ -40,9 +39,6 @@ public class InfectionModule : BattleBitModule
 
 	public CommandHandler? CommandHandler { get; set; }
 
-	[ModuleReference]
-	public IPermissionsModule? PermissionsModule { get; set; }
-
 	public IEnumerable<RunnerPlayer> CuredPlayers => Server.AllTeamAPlayers;
 	public IEnumerable<RunnerPlayer> InfectedPlayers => Server.AllTeamBPlayers;
 
@@ -72,8 +68,6 @@ public class InfectionModule : BattleBitModule
 	public override void OnModulesLoaded()
 	{
 		CommandHandler?.Register(this);
-
-		Console.WriteLine($"PermissionsModule: {PermissionsModule?.GetType().Name ?? "null"}");
 	}
 
 	public override Task OnTick()
@@ -267,28 +261,19 @@ public class InfectionModule : BattleBitModule
 	[CommandCallback("curePlayer")]
 	public void CurePlayerCommand(RunnerPlayer player)
 	{
-		if (PermissionsModule.HasPermission(player, PERMISSION_CURE_SELF))
-		{
-			CurePlayer(player, true);
-		}
+		CurePlayer(player, true);
 	}
 
 	[CommandCallback("infectPlayer")]
 	private void InfectPlayerCommand(RunnerPlayer player)
 	{
-		if (PermissionsModule.HasPermission(player, PERMISSION_INFECT_SELF))
-		{
-			InfectPlayer(player, true);
-		}
+		InfectPlayer(player, true);
 	}
 
 	[CommandCallback("infectPlayers")]
 	private void InfectPlayersCommand(RunnerPlayer player, int count)
 	{
-		if (PermissionsModule.HasPermission(player, PERMISSION_INFECT_OTHERS))
-		{
-			InfectRandomPlayers(count, true);
-		}
+		InfectRandomPlayers(count, true);
 	}
 
 	private static void Swap<T>(IList<T> items, int first, int second)
