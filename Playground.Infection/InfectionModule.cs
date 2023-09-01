@@ -37,6 +37,7 @@ public class InfectionModule : BattleBitModule
 
 	public InfectionModuleConfig Config { get; set; } = new();
 
+	[ModuleReference]
 	public CommandHandler? CommandHandler { get; set; }
 
 	public IEnumerable<RunnerPlayer> CuredPlayers => Server.AllTeamAPlayers;
