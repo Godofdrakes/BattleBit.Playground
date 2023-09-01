@@ -218,6 +218,7 @@ public class InfectionModule : BattleBitModule
 		else
 		{
 			_infectionCheckLast = DateTime.MaxValue;
+			_curedCheckLast = DateTime.MaxValue;
 			_playerConnected = player => CurePlayer(player);
 			_playerRequestingToChangeTeam = (_, _) => true;
 		}
