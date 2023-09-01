@@ -1,4 +1,5 @@
-﻿using BBRAPIModules;
+﻿using System.Threading.Tasks;
+using BBRAPIModules;
 
 namespace Playground.AllWeaponsUnlocked;
 
