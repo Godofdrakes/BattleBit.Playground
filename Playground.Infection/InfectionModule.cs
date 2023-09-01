@@ -43,10 +43,9 @@ public class InfectionModule : BattleBitModule
 	public IEnumerable<RunnerPlayer> CuredPlayers => Server.AllTeamAPlayers;
 	public IEnumerable<RunnerPlayer> InfectedPlayers => Server.AllTeamBPlayers;
 
+	public int CuredPlayerCount => CuredPlayers.Count();
 	public int InfectedPlayerCount => InfectedPlayers.Count();
 
-	public int InfectedPlayerCountTarget => Convert
-		.ToInt32(Server.CurrentPlayerCount * (float) Config.InfectionPct / 100);
 
 	private DateTime _infectionCheckLast = DateTime.MaxValue;
 	private DateTime _curedCheckLast = DateTime.MaxValue;
@@ -80,10 +79,15 @@ public class InfectionModule : BattleBitModule
 		var infectionCheckElapsed = DateTime.Now - _infectionCheckLast;
 		if (infectionCheckElapsed >= TimeSpan.FromSeconds(infectionCheck))
 		{
+			var playerCount = Server.CurrentPlayerCount;
+			var infectionPct = Config.InfectionPct;
 			var infectedCount = InfectedPlayerCount;
-			var infectedTarget = InfectedPlayerCountTarget;
+			var infectedTarget = Math.Max(Convert.ToInt32(playerCount * infectionPct / 100f), 1);
 
-			_logger.WriteLine($"infected players: {infectedCount}, target: {infectedTarget}");
+			_logger.WriteLine($"total players: {playerCount}");
+			_logger.WriteLine($"infection pct: {infectionPct}");
+			_logger.WriteLine($"infected players: {infectedCount}");
+			_logger.WriteLine($"infection target: {infectedTarget}");
 
 			// ensure enough players are infected
 			if (infectedCount < infectedTarget)
@@ -98,7 +102,11 @@ public class InfectionModule : BattleBitModule
 		var curedCheckElapsed = DateTime.Now - _curedCheckLast;
 		if (curedCheckElapsed >= TimeSpan.FromSeconds(curedCheck))
 		{
-			if (!CuredPlayers.Any())
+			var curedCount = CuredPlayerCount;
+
+			_logger.WriteLine($"cured players: {curedCount}");
+
+			if (curedCount < 1)
 			{
 				Server.AnnounceLong("the infected devour the last survivor");
 				Server.ForceEndGame();
@@ -156,6 +164,11 @@ public class InfectionModule : BattleBitModule
 
 		if (IsCured(player))
 		{
+			player.Modifications.RunningSpeedMultiplier = 1;
+			player.Modifications.JumpHeightMultiplier = 1;
+			player.Modifications.FallDamageMultiplier = 1;
+			player.Modifications.ReceiveDamageMultiplier = 1;
+			player.Modifications.GiveDamageMultiplier = 1;
 			player.Modifications.RespawnTime = Config.CuredRespawn;
 		}
 
