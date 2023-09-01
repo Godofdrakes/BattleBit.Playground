@@ -84,6 +84,8 @@ public class CommandHandler : BattleBitModule
                 }
 
                 this.commandCallbacks.Add(command, (module, method));
+
+                Console.WriteLine($"Registered command '{command}'");
             }
         }
     }
