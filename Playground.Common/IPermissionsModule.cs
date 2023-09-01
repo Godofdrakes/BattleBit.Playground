@@ -3,22 +3,19 @@ using BBRAPIModules;
 
 namespace Playground.Common;
 
-public static class PermissionsModuleEx
-{
-	public static bool HasPermission(this IPermissionsModule? permissionsModule, RunnerPlayer player, string permission)
-	{
-		if (permissionsModule is not null)
-		{
-			return permissionsModule.HasPermission(player.SteamID, permission);
-		}
-
-		return true;
-	}
-}
-
 public interface IPermissionsModule
 {
-	bool HasPermission(ulong playerId, string permission);
+	bool HasPermission(ulong playerId, string? permission);
 
 	IEnumerable<string> GetPlayerPermissions(ulong playerId);
+
+	bool HasPermission(RunnerPlayer player, string? permission)
+	{
+		return HasPermission(player.SteamID, permission);
+	}
+
+	IEnumerable<string> GetPlayerPermissions(RunnerPlayer player)
+	{
+		return GetPlayerPermissions(player.SteamID);
+	}
 }

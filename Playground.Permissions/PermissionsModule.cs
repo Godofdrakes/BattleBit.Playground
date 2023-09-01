@@ -1,67 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BBRAPIModules;
 using Playground.Common;
 
 namespace Playground.Permissions;
 
-public class ServerRoleDefinition
-{
-	public string Name { get; set; } = string.Empty;
-	public string Description { get; set; } = string.Empty;
-	public List<string> Permissions { get; set; } = new();
-}
-
-public class ServerRoleAssignment
-{
-	// the specific playerId to give this role to
-	public ulong PlayerId { get; set; } = 0;
-	public List<string> Roles { get; set; } = new();
-}
-
 public class PermissionsConfig : ModuleConfiguration
 {
-	public List<ServerRoleDefinition> Roles { get; set; } = new();
-	public List<ServerRoleAssignment> Players { get; set; } = new();
+	public Dictionary<ulong, HashSet<string>> PlayerPermissions { get; set; } = new();
 }
 
 public class PermissionsModule : BattleBitModule, IPermissionsModule
 {
+	[ModuleReference]
+	public ICommandsModule? CommandsModule { get; set; }
+
 	public PermissionsConfig Config { get; set; } = new();
 
-	private readonly Dictionary<string, ServerRoleDefinition> _serverRoles = new();
-	private readonly Dictionary<ulong, HashSet<string>> _playerPermissions = new();
+	private readonly TextWriter _logger;
+	
+	public PermissionsModule()
+	{
+		_logger = Console.Out;
+	}
 
 	public override void OnModulesLoaded()
 	{
-		// todo: enforce some kind of naming convention?
+		CommandsModule?.Register(this);
+	}
 
-		foreach (var role in Config.Roles)
-		{
-			_serverRoles[role.Name] = role;
-		}
+	public override void OnModuleUnloading()
+	{
+		CommandsModule?.Unregister(this);
+	}
 
-		foreach (var roleAssignment in Config.Players)
+	public void AddPlayerPermission(ulong playerId, string permission)
+	{
+		_logger.WriteLine($"Adding permission {permission} to player {playerId}");
+
+		lock (Config)
 		{
-			if (!_playerPermissions.TryGetValue(roleAssignment.PlayerId, out var set))
+			Config.PlayerPermissions.TryGetValue(playerId, out var permissionSet);
+
+			if (permissionSet is null)
 			{
-				_playerPermissions[roleAssignment.PlayerId] = set = new HashSet<string>();
+				Config.PlayerPermissions[playerId] = permissionSet = new HashSet<string>();
 			}
 
-			foreach (var permission in roleAssignment.Roles.SelectMany(GetPermissionsForRole))
+			if (permissionSet.Add(permission))
 			{
-				set.Add(permission);
+				Config.Save();
 			}
 		}
 	}
 
-	public bool HasPermission(ulong playerId, string permission)
+	public void RemovePlayerPermission(ulong playerId, string permission)
 	{
-		var permissions = _playerPermissions?[playerId] ?? Enumerable.Empty<string>();
-		if (permissions.Contains(permission, StringComparer.InvariantCultureIgnoreCase))
+		_logger.WriteLine($"Removing permission {permission} from player {playerId}");
+
+		lock (Config)
+		{
+			Config.PlayerPermissions.TryGetValue(playerId, out var permissionSet);
+
+			if (permissionSet is not null)
+			{
+				if (permissionSet.Remove(permission))
+				{
+					Config.Save();
+				}
+			}
+		}
+	}
+
+	public bool HasPermission(ulong playerId, string? permission)
+	{
+		if (permission is null)
 		{
 			return true;
+		}
+
+		lock (Config)
+		{
+			Config.PlayerPermissions.TryGetValue(playerId, out var permissionSet);
+
+			if (permissionSet is not null)
+			{
+				return permissionSet.Contains(permission);
+			}
 		}
 
 		return false;
@@ -69,16 +96,27 @@ public class PermissionsModule : BattleBitModule, IPermissionsModule
 
 	public IEnumerable<string> GetPlayerPermissions(ulong playerId)
 	{
-		return _playerPermissions?[playerId] ?? Enumerable.Empty<string>();
-	}
-
-	public IEnumerable<string> GetPermissionsForRole(string role)
-	{
-		if (_serverRoles.TryGetValue(role, out var definition))
+		lock (Config)
 		{
-			return definition.Permissions;
+			Config.PlayerPermissions.TryGetValue(playerId, out var permissionSet);
+
+			if (permissionSet is not null)
+			{
+				return permissionSet.ToArray();
+			}
 		}
 
 		return Enumerable.Empty<string>();
+	}
+
+	[Command("perm reload")]
+	private void ReloadPermissionsCommand()
+	{
+		_logger.WriteLine("Reloading permissions");
+
+		lock (Config)
+		{
+			Config.Load();
+		}
 	}
 }
