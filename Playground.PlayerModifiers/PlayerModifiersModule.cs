@@ -38,7 +38,7 @@ public class PlayerModifiersModule : BattleBitModule
 	}
 
 	[CommandCallback("playerModifiers.load")]
-	public void Load() => Config.Save();
+	public void Load() => Config.Load();
 
 	[CommandCallback("playerModifiers.save")]
 	public void Save() => Config.Save();
