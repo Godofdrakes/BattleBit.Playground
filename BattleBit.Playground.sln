@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Common", "Playgr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Commands", "Playground.Commands\Playground.Commands.csproj", "{3BF23FBC-03A1-46BB-990D-E222306C4E18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.AllWeaponsUnlocked", "Playground.AllWeaponsUnlocked\Playground.AllWeaponsUnlocked.csproj", "{F447BC9B-D172-4E4C-B293-B6BEBA3239B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{3BF23FBC-03A1-46BB-990D-E222306C4E18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BF23FBC-03A1-46BB-990D-E222306C4E18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BF23FBC-03A1-46BB-990D-E222306C4E18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F447BC9B-D172-4E4C-B293-B6BEBA3239B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F447BC9B-D172-4E4C-B293-B6BEBA3239B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F447BC9B-D172-4E4C-B293-B6BEBA3239B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F447BC9B-D172-4E4C-B293-B6BEBA3239B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9D9D2264-0986-49D3-9971-079B0DAC576E} = {6DAE9470-556A-47C4-BB56-3591D614DEBE}
@@ -54,5 +60,6 @@ Global
 		{9C58FA23-F29A-4874-B605-8E4D3783AA91} = {6DAE9470-556A-47C4-BB56-3591D614DEBE}
 		{A0CA1544-5DAF-4139-97FA-3414B913C0E9} = {6DAE9470-556A-47C4-BB56-3591D614DEBE}
 		{3BF23FBC-03A1-46BB-990D-E222306C4E18} = {6DAE9470-556A-47C4-BB56-3591D614DEBE}
+		{F447BC9B-D172-4E4C-B293-B6BEBA3239B6} = {6DAE9470-556A-47C4-BB56-3591D614DEBE}
 	EndGlobalSection
 EndGlobal
