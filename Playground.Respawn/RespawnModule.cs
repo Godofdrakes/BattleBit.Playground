@@ -6,6 +6,7 @@ namespace Playground.Respawn;
 [RequireModule(typeof(CommandHandler))]
 public class RespawnModule : BattleBitModule
 {
+	[ModuleReference]
 	public CommandHandler? CommandHandler { get; set; }
 
 	public override void OnModulesLoaded()
