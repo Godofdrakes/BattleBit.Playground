@@ -36,6 +36,22 @@ You can also just paste the compiled DLL for `BattleBit.Playground/Playground.Co
 | CuredLives                    | int   | 1       | How many lives to cured players start with? Players that die with zero lives join the infected. |
 | CuredRespawn                  | int   | 30      | How many seconds does it take for cured players to respawn?                                     |
 
+```json
+{
+  "InfectionPct": 5,
+  "InfectionCheck": 30,
+  "InfectionRespawn": 10,
+  "InfectRunningSpeedMultiplier": 1,
+  "InfectJumpHeightMultiplier": 1,
+  "InfectFallDamageMultiplier": 0,
+  "InfectReceiveDamageMultiplier": 0.5,
+  "InfectGiveDamageMultiplier": 4,
+  "CuredLives": 1,
+  "CuredCheck": 1,
+  "CuredRespawn": 30
+}
+```
+
 ## Commands
 
 | Command       | Args        | Required Permission           | Description                             |
@@ -45,3 +61,4 @@ You can also just paste the compiled DLL for `BattleBit.Playground/Playground.Co
 | infectPlayers | (int) count | Module.Infection.InfectOthers | Select N random players to infect       |
 
 If `PermissionsModule` is not loaded permission requirements will be ignored. All players will have access to all commands.
+
