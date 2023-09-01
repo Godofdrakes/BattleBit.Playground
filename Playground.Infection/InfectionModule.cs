@@ -68,6 +68,8 @@ public class InfectionModule : BattleBitModule
 	public override void OnModulesLoaded()
 	{
 		CommandHandler?.Register(this);
+
+		Config.Save();
 	}
 
 	public override Task OnTick()
@@ -189,6 +191,7 @@ public class InfectionModule : BattleBitModule
 		{
 			// start the timer
 			_infectionCheckLast = DateTime.MinValue;
+			_curedCheckLast = DateTime.MinValue;
 
 			// infect late-joining players
 			_playerConnected = player => InfectPlayer(player, false);
